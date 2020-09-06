@@ -1,0 +1,125 @@
+
+#include <bits/stdc++.h> 
+using namespace std; 
+
+// here cnt is an integer that will store 
+// count of words ending at that node 
+struct trieNode { 
+	string key; 
+	int cnt; 
+	unordered_map<char, trieNode*> map; 
+}; 
+
+// utility function to create a new node 
+trieNode* getNode() 
+{ 
+	trieNode* temp = new (trieNode); 
+
+	
+	temp->cnt = 0; 
+	return temp; 
+} 
+
+// Function to insert new words in trie 
+void insert(trieNode* root, string& str) 
+{ 
+	
+    // start from root node 
+    trieNode* temp = root; 
+  
+    for (int i = 0; i < str.length(); i++) { 
+  
+        char x = str[i]; 
+  
+        /*a new node if path doesn't exists*/
+        if (temp->map.find(x) == temp->map.end()) 
+            temp->map[x] = getNode(); 
+  
+        // go to next node 
+        temp = temp->map[x]; 
+    } 
+  
+    // store key and its count in leaf nodes 
+    temp->key = str; 
+    temp->cnt += 1; 
+} 
+// Search function to find a word of a sentence 
+bool search_mod(trieNode* root, string word) 
+{ 
+	trieNode* trail; 
+	trail = root; 
+
+	// Iterate for the complete length of the word 
+	for (int i = 0; i < word.length(); i++) { 
+        char c= word[i];
+		// If the character is not present then word 
+		// is also not present 
+		if (trail->map.find(c) == trail->map.end()) 
+			return false;
+
+		// If present move to next charater in Trie 
+		trail = trail->map[c];
+	} 
+
+	// If word foundthen decrement count of the word 
+	if ((trail->cnt) > 0 && trail != NULL) { 
+		
+		return true; 
+	} 
+	else
+		return false; 
+} 
+// Function to check if string can be 
+// formed from the sentence
+
+void checkPossibility(string word, trieNode* root) 
+{ 
+    trieNode* trail; 
+	trail = root; 
+	int flag = 1; 
+
+
+		if (search_mod(root, word) == false){
+			cout << "NO"; 
+
+			return; 
+		}
+
+	cout << "YES, " << trail->cnt; 
+} 
+
+// Function to insert all the words of dict in the Trie 
+void insertToTrie(string dictionary[], int n, 
+				trieNode* root) 
+{ 
+
+	for (int i = 0; i < n; i++) 
+		insert(root, dictionary[i]); 
+} 
+
+// Driver Code 
+int main() 
+{ 
+	trieNode* root; 
+	root = getNode(); 
+
+	// Dictionary of words 
+	string dictionary[1000000];
+	for(int i=0; i<1000000; i++){
+	    
+	    cin>>dictionary[i];
+	}
+	int N = sizeof(dictionary) / sizeof(dictionary[0]); 
+
+	// Calling Function to insert words of dictionary to tree 
+	insertToTrie(dictionary, N, root);
+
+	// String to be checked 
+	string word;
+	cout << "Enter the word";
+	cin >> word;
+
+	checkPossibility(word, root); 
+
+	return 0; 
+} 
